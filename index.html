@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Битва с Айро-Грилем</title>
+<style>
+:root{--bg:#100f1d;--panel:#1b1930;--pink:#ff72b6;--gold:#ffd166;--cyan:#76e5ff;--text:#fff7fb}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#34204b 0%,#100f1d 65%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;display:flex;justify-content:center;align-items:center;padding:18px}
+.game{width:min(900px,100%);background:#171426;border:2px solid #49345f;border-radius:24px;overflow:hidden;box-shadow:0 20px 70px #0008}
+header{padding:18px 22px;background:#211a35;border-bottom:1px solid #4c355e;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font-size:clamp(20px,4vw,30px);margin:0;color:var(--pink)}.tag{color:var(--gold);font-weight:800;font-size:13px;letter-spacing:1px}
+main{padding:clamp(14px,3vw,26px)}
+.screen{display:none}.screen.active{display:block}
+.intro{text-align:center;padding:18px 8px 10px}.intro h2{font-size:clamp(24px,5vw,38px);margin:10px 0;color:var(--gold)}.intro p{line-height:1.65;color:#e6dced;max-width:650px;margin:10px auto}
+button{border:0;border-radius:14px;padding:13px 20px;background:var(--pink);color:#241025;font-size:16px;font-weight:850;cursor:pointer;box-shadow:0 5px 0 #a93e79;transition:transform .12s}button:hover{transform:translateY(-2px)}button:active{transform:translateY(2px);box-shadow:0 2px 0 #a93e79}
+.arena{position:relative;background:linear-gradient(#201c3b,#30203d 62%,#422d43);border:2px solid #594267;border-radius:18px;overflow:hidden}
+canvas{display:block;width:100%;height:auto;touch-action:manipulation}
+.hud{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:15px 0}.meter-label{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-bottom:6px}.bar{height:15px;background:#40364d;border-radius:99px;overflow:hidden;border:1px solid #62516e}.fill{height:100%;width:100%;transition:width .2s}.player-fill{background:linear-gradient(90deg,#62e6a7,#b8ffb7)}.boss-fill{background:linear-gradient(90deg,#ff5e75,#ffb45b)}
+.instructions{text-align:center;color:#d6c7e0;font-size:14px;line-height:1.6;margin:10px 0}
+.controls{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px}.controls button{min-width:66px;background:#d8c7ff;box-shadow:0 4px 0 #8e72c0}.controls .attack{background:var(--gold);box-shadow:0 4px 0 #b7862e;min-width:135px}
+.result{text-align:center;padding:18px 8px}.result h2{font-size:clamp(28px,6vw,44px);color:var(--gold);margin:8px 0}.details{margin:20px auto;max-width:560px;padding:20px;border:2px dashed var(--pink);border-radius:18px;background:#251a35;text-align:left;line-height:1.8}.details strong{color:var(--pink)}.small{font-size:12px;color:#b7a7c7;margin-top:16px}
+#toast{min-height:24px;text-align:center;color:var(--gold);font-weight:750;margin-top:8px}
+@media(max-width:500px){body{padding:8px}.game{border-radius:16px}.hud{gap:8px}.meter-label{font-size:12px}.controls button{padding:12px 15px}.intro{padding-top:8px}}
+</style>
+</head>
+<body>
+<div class="game">
+<header><h1>⚔️ Битва с Айро-Грилем</h1><span class="tag">ОПЕРАЦИЯ «ГОДОВЩИНА»</span></header>
+<main>
+<section id="intro" class="screen active">
+<div class="intro">
+<div style="font-size:68px">💌</div>
+<h2>Привет, Арина!</h2>
+<p><b>Это твой любимый парень.</b></p>
+<p>Вчера у нас была годовщина, и я приготовил кое-что особенное. Но чтобы узнать, как мы её отпразднуем, тебе придётся победить страшного босса — <b>Айро-Гриля</b>.</p>
+<p>Он не отдаст секрет просто так. Докажи, кто здесь главный!</p>
+<button id="start">Начать сражение</button>
+</div>
+</section>
+<section id="battle" class="screen">
+<div class="hud">
+<div><div class="meter-label"><span>Ты, гроза гриля</span><span id="hpText">100 / 100</span></div><div class="bar"><div id="hp" class="fill player-fill"></div></div></div>
+<div><div class="meter-label"><span>Айро-Гриль</span><span id="bossText">120 / 120</span></div><div class="bar"><div id="bossHp" class="fill boss-fill"></div></div></div>
+</div>
+<div class="arena"><canvas id="canvas" width="840" height="390" aria-label="Игровое поле: герой сражается с Айро-Грилем"></canvas></div>
+<div id="toast">Подойди поближе и атакуй!</div>
+<div class="controls">
+<button id="left" aria-label="Двигаться влево">◀</button>
+<button id="attack" class="attack">УДАР! ✦</button>
+<button id="right" aria-label="Двигаться вправо">▶</button>
+</div>
+<p class="instructions">Клавиши: ← / → или A / D — двигаться, пробел — удар.<br>На телефоне используй кнопки. Победи босса, чтобы открыть сюрприз.</p>
+</section>
+<section id="victory" class="screen">
+<div class="result">
+<div style="font-size:70px">🏆💗</div><h2>ПОБЕДА!</h2>
+<p>Айро-Гриль повержен, а секрет годовщины раскрыт!</p>
+<div class="details">
+<div>🕕 <strong>Время:</strong> 18:00</div>
+<div>📍 <strong>Ориентир:</strong> м. Лиговский проспект</div>
+<div>🎀 <strong>Дресс-код:</strong> милый</div>
+<div style="margin-top:10px;color:#ffd166;font-weight:800">И главное: не пытайся угадать место заранее!</div>
+<p style="font-size:14px;margin-bottom:0">Это пока примерный ориентир — подробности будут позже. Готовься к нашему празднику.</p>
+</div>
+<p>С годовщиной нас, Арина. Люблю тебя!</p>
+<button id="again">Сразиться ещё раз</button>
+</div>
+</section>
+<section id="defeat" class="screen">
+<div class="result"><div style="font-size:65px">🍔💥</div><h2>Гриль победил...</h2><p>Но это ещё не конец! Попробуй снова — секрет годовщины ждёт.</p><button id="retry">Реванш!</button></div>
+</section>
+</main>
+</div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const screens = ['intro','battle','victory','defeat'];
+const canvas = $('canvas'), ctx = canvas.getContext('2d');
+let playerX=160, bossX=660, hp=100, bossHp=120, frame=0, attackFlash=0, bossFlash=0, lock=false, timer=null;
+function show(name){screens.forEach(s=>$(s).classList.toggle('active',s===name))}
+function updateHud(){
+ $('hp').style.width=Math.max(0,hp)+'%'; $('bossHp').style.width=Math.max(0,bossHp/120*100)+'%';
+ $('hpText').textContent=Math.max(0,hp)+' / 100'; $('bossText').textContent=Math.max(0,bossHp)+' / 120';
+}
+function start(){clearInterval(timer);playerX=160;bossX=660;hp=100;bossHp=120;frame=0;attackFlash=0;bossFlash=0;lock=false;updateHud();show('battle');$('toast').textContent='Подойди поближе и атакуй!';draw();timer=setInterval(tick,100)}
+function move(dir){if(lock)return;playerX=Math.max(55,Math.min(400,playerX+dir*24));draw()}
+function attack(){if(lock)return;if(Math.abs(bossX-playerX)>210){$('toast').textContent='Слишком далеко! Подойди ближе.';return}bossHp=Math.max(0,bossHp-20);attackFlash=8;bossFlash=5;$('toast').textContent=['Красивый удар!','Айро-Гриль пошатнулся!','Так держать!'][Math.floor(Math.random()*3)];updateHud();draw();if(bossHp<=0){lock=true;clearInterval(timer);setTimeout(()=>show('victory'),450)}}
+function tick(){if(lock)return;frame++;if(frame%10===0){if(Math.abs(bossX-playerX)<210){hp=Math.max(0,hp-7);$('toast').textContent='Босс контратакует! Уклоняйся и бей.';updateHud();if(hp<=0){lock=true;clearInterval(timer);setTimeout(()=>show('defeat'),450)}}else{bossX=Math.max(playerX+125,bossX-12)}}if(attackFlash>0)attackFlash--;if(bossFlash>0)bossFlash--;draw()}
+function rounded(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function text(t,x,y,size,color,align='center'){ctx.fillStyle=color;ctx.font=`800 ${size}px system-ui`;ctx.textAlign=align;ctx.fillText(t,x,y)}
+function drawHero(x,y){ctx.save();ctx.translate(x,y);
+ // little adventurer
+ rounded(-22,-58,44,49,12,'#74e4ff');ctx.fillStyle='#f6c6a5';ctx.beginPath();ctx.arc(0,-72,18,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#36213f';ctx.beginPath();ctx.arc(0,-79,19,Math.PI,Math.PI*2);ctx.fill();
+ rounded(-22,-13,16,28,6,'#ff72b6');rounded(6,-13,16,28,6,'#ff72b6');
+ ctx.strokeStyle='#f6c6a5';ctx.lineWidth=9;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-17,-47);ctx.lineTo(-32,-29);ctx.moveTo(17,-47);ctx.lineTo(30,-43);ctx.stroke();
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-6,-74,3,0,Math.PI*2);ctx.arc(6,-74,3,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#25142c';ctx.beginPath();ctx.arc(-6,-74,1.5,0,Math.PI*2);ctx.arc(6,-74,1.5,0,Math.PI*2);ctx.fill();
+ if(attackFlash>0){ctx.strokeStyle='#ffd166';ctx.lineWidth=8;ctx.beginPath();ctx.arc(40,-47,30,-.9,.65);ctx.stroke();text('✦',53,-78,25,'#fff1a8')}
+ ctx.restore()}
+function drawBoss(x,y){ctx.save();ctx.translate(x,y);
+ // grill-body and exaggerated curly afro silhouette
+ ctx.fillStyle=bossFlash?'#fff2b2':'#3d2435';
+ for(let i=0;i<13;i++){let a=i*Math.PI*2/13;ctx.beginPath();ctx.arc(Math.cos(a)*36, -91+Math.sin(a)*27,17,0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle=bossFlash?'#fff2b2':'#5b3446';ctx.beginPath();ctx.arc(0,-89,34,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#f0b48b';ctx.beginPath();ctx.ellipse(0,-79,25,29,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#271b2b';ctx.beginPath();ctx.arc(-9,-84,3,0,Math.PI*2);ctx.arc(9,-84,3,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#7d2f48';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,-73,10,.2,Math.PI-.2);ctx.stroke();
+ rounded(-33,-48,66,52,12,bossFlash?'#fff2b2':'#ff725e');
+ ctx.strokeStyle='#9a3f38';ctx.lineWidth=3;for(let yy=-37;yy<-4;yy+=10){ctx.beginPath();ctx.moveTo(-27,yy);ctx.lineTo(27,yy);ctx.stroke()}
+ rounded(-29,2,20,25,6,'#34253f');rounded(9,2,20,25,6,'#34253f');
+ ctx.strokeStyle='#f0b48b';ctx.lineWidth=10;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-27,-35);ctx.lineTo(-44,-17);ctx.moveTo(27,-35);ctx.lineTo(42,-46);ctx.stroke();
+ if(bossFlash>0)text('💥',-42,-115,28,'#fff');
+ ctx.restore()}
+function draw(){ctx.clearRect(0,0,840,390);
+ let g=ctx.createLinearGradient(0,0,0,390);g.addColorStop(0,'#201b3b');g.addColorStop(1,'#563348');ctx.fillStyle=g;ctx.fillRect(0,0,840,390);
+ // stars / lights
+ for(let i=0;i<24;i++){ctx.fillStyle=i%2?'#ffffff22':'#ffd16644';ctx.beginPath();ctx.arc((i*83+23)%840,(i*47+19)%210,2+(i%3),0,Math.PI*2);ctx.fill()}
+ ctx.fillStyle='#32223a';ctx.fillRect(0,300,840,90);ctx.fillStyle='#654052';ctx.fillRect(0,300,840,8);
+ text('АРЕНА ГОДОВЩИНЫ',420,35,17,'#ffd166');
+ drawHero(playerX,294);drawBoss(bossX,294);
+ text('ТЫ',playerX,342,15,'#76e5ff');text('АЙРО-ГРИЛЬ',bossX,342,15,'#ff9eac');
+ ctx.fillStyle='#ffffff20';ctx.fillRect(0,365,840,25);
+ text('Двигайся  •  Подойди  •  УДАР!',420,383,12,'#fff7fb');
+}
+$('start').addEventListener('click',start);$('again').addEventListener('click',()=>show('intro'));$('retry').addEventListener('click',start);
+$('left').addEventListener('click',()=>move(-1));$('right').addEventListener('click',()=>move(1));$('attack').addEventListener('click',attack);
+document.addEventListener('keydown',e=>{if(! $('battle').classList.contains('active'))return;if(['ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')move(-1);if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')move(1);if(e.key===' ')attack()});
+draw();
+})();
+</script>
+</body>
+</html>
