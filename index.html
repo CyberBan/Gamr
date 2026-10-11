@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Битва с Айро: Хардкор</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0d0e15;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(20, 20, 35, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 75, 43, 0.3);
+            border: 2px solid rgba(255, 75, 43, 0.3);
+            max-width: 550px;
+            width: 90%;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #ff4b2b;
+            text-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #cfd2dc;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            border: none;
+            color: white;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(255, 75, 43, 0.5);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 75, 43, 0.8);
+        }
+
+        /* Игровой интерфейс */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .health-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .health-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            transition: width 0.1s linear;
+        }
+
+        .player-health-fill {
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+        }
+
+        /* Игровое поле */
+        .game-arena {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            cursor: crosshair;
+        }
+
+        /* Босс */
+        .boss {
+            position: absolute;
+            font-size: 65px;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.05s;
+            filter: drop-shadow(0 0 10px rgba(255, 65, 108, 0.7));
+            animation: boss-pulse 1s infinite alternate;
+        }
+
+        @keyframes boss-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .boss:active {
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        /* Снаряды босса */
+        .projectile {
+            position: absolute;
+            font-size: 24px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        /* Эффект урона по игроку */
+        .container.damage-flash {
+            animation: flash 0.2s ease;
+        }
+
+        @keyframes flash {
+            0% { border-color: #ff4b2b; box-shadow: 0 0 50px #ff4b2b; }
+            100% { border-color: rgba(255, 75, 43, 0.3); box-shadow: 0 0 40px rgba(255, 75, 43, 0.3); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Победный блок */
+        .success-box {
+            background: rgba(46, 213, 115, 0.1);
+            border: 1px solid rgba(46, 213, 115, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .success-box h2 {
+            color: #2ed573;
+            margin-top: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        <!-- Экран 1: Вступление -->
+        <div id="screen-intro">
+            <h1>Привет, Арина!</h1>
+            <p>Это твой любимый парень. У нас вчера была годовщина, и чтобы узнать, как мы её отпразднуем, тебе придется пройти суровое испытание...</p>
+            <p style="color: #ff4b2b; font-weight: bold;">Мастер Айро полон сил, перемещается по полю и швыряет огненные шары! У тебя всего 5 жизней.</p>
+            <button class="btn" onclick="startGame()">Принять вызов!</button>
+        </div>
+
+        <!-- Экран 2: Хардкорная игра -->
+        <div id="screen-game" class="hidden">
+            <div class="stats-bar">
+                <span>🍵🔥 Мастер Айро</span>
+                <span id="phaseText">Фаза 1</span>
+            </div>
+            <div class="health-container">
+                <div id="bossHealthBar" class="health-fill"></div>
+            </div>
+
+            <div class="stats-bar">
+                <span>❤️ Твое здоровье</span>
+                <span id="playerHpText">5 / 5</span>
+            </div>
+            <div class="health-container">
+                <div id="playerHealthBar" class="health-fill player-health-fill"></div>
+            </div>
+
+            <div class="game-arena" id="arena" onclick="handleArenaMiss(event)">
+                <div id="boss" class="boss" onclick="hitBoss(event)">🍵🔥</div>
+            </div>
+        </div>
+
+        <!-- Экран 3: Победа -->
+        <div id="screen-win" class="hidden">
+            <h1>Легендарная победа! 🎉</h1>
+            <p>Ты одолела самого Айро и доказала, что достойна главного приза!</p>
+            
+            <div class="success-box">
+                <h2>План празднования:</h2>
+                <p>⏰ <strong>Время:</strong> 18:00<br>
+                📍 <strong>Адрес:</strong> м. Лиговский проспект<br>
+                👗 <strong>Дресс-код:</strong> милый</p>
+                <p style="font-size: 13px; color: #ff9f43; text-align: center; margin-bottom: 0;">(Не подуй угадать, что это за место! 😉)</p>
+            </div>
+        </div>
+
+        <!-- Экран 4: Поражение -->
+        <div id="screen-gameover" class="hidden">
+            <h1>Потрачено... 💀</h1>
+            <p>Айро оказался слишком мудр и силен. Готова взять реванш?</p>
+            <button class="btn" onclick="startGame()">Попробовать снова</button>
+        </div>
+    </div>
+
+    <script>
+        let bossMaxHp = 50;
+        let bossHp = 50;
+        let playerHp = 5;
+        let gameInterval;
+        let moveInterval;
+        let bossX = 150, bossY = 150;
+        let bossVx = 2, bossVy = 1.5;
+        let projectiles = [];
+
+        function startGame() {
+            bossMaxHp = 50;
+            bossHp = 50;
+            playerHp = 5;
+            projectiles = [];
+            
+            document.getElementById('screen-intro').classList.add('hidden');
+            document.getElementById('screen-gameover').classList.add('hidden');
+            document.getElementById('screen-win').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            updateHpDisplay();
+
+            clearInterval(gameInterval);
+            clearInterval(moveInterval);
+
+            moveInterval = setInterval(updateBossPosition, 30);
+            gameInterval = setInterval(gameLoop, 1000 / 60);
+        }
+
+        function updateBossPosition() {
+            const arena = document.getElementById('arena');
+            const maxX = arena.clientWidth - 50;
+            const maxY = arena.clientHeight - 50;
+
+            bossX += bossVx;
+            bossY += bossVy;
+
+            if (bossX <= 30 || bossX >= maxX) bossVx *= -1;
+            if (bossY <= 30 || bossY >= maxY) bossVy *= -1;
+
+            if (bossHp < 25) {
+                document.getElementById('phaseText').innerText = "⚡ Фаза 2 (Ярость чая!)";
+                bossVx *= 1.002;
+                bossVy *= 1.002;
+            }
+
+            const bossEl = document.getElementById('boss');
+            bossEl.style.left = bossX + 'px';
+            bossEl.style.top = bossY + 'px';
+        }
+
+        function hitBoss(event) {
+            event.stopPropagation();
+            bossHp -= 1;
+            updateHpDisplay();
+
+            if (Math.random() < 0.4) {
+                spawnProjectile();
+            }
+
+            if (bossHp <= 0) {
+                winGame();
+            }
+        }
+
+        function spawnProjectile() {
+            const arena = document.getElementById('arena');
+            const p = {
+                x: bossX,
+                y: bossY,
+                vx: (Math.random() - 0.5) * 6,
+                vy: (Math.random() - 0.5) * 6,
+                el: document.createElement('div')
+            };
+            p.el.className = 'projectile';
+            p.el.innerHTML = '🔥';
+            arena.appendChild(p.el);
+            projectiles.push(p);
+        }
+
+        function gameLoop() {
+            const arena = document.getElementById('arena');
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let p = projectiles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.el.style.left = p.x + 'px';
+                p.el.style.top = p.y + 'px';
+
+                if (p.x < 0 || p.x > arena.clientWidth || p.y < 0 || p.y > arena.clientHeight) {
+                    p.el.remove();
+                    projectiles.splice(i, 1);
+                }
+            }
+        }
+
+        function handleArenaMiss(event) {
+            playerHp -= 1;
+            triggerDamageFlash();
+            updateHpDisplay();
+
+            if (playerHp <= 0) {
+                gameOver();
+            }
+        }
+
+        function triggerDamageFlash() {
+            const container = document.getElementById('mainContainer');
+            container.classList.add('damage-flash');
+            setTimeout(() => container.classList.remove('damage-flash'), 200);
+        }
+
+        function updateHpDisplay() {
+            document.getElementById('bossHealthBar').style.width = (bossHp / bossMaxHp) * 100 + '%';
+            document.getElementById('playerHealthBar').style.width = (playerHp / 5) * 100 + '%';
+            document.getElementById('playerHpText').innerText = playerHp + ' / 5';
+        }
+
+        function winGame() {
+            clearInterval(gameInterval);
+            clearInterval(moveInterval);
+            clearProjectiles();
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-win').classList.remove('hidden');
+        }
+
+        function gameOver() {
+            clearInterval(gameInterval);
+            clearInterval(moveInterval);
+            clearProjectiles();
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-gameover').classList.remove('hidden');
+        }
+
+        function clearProjectiles() {
+            projectiles.forEach(p => p.el.remove());
+            projectiles = [];
+        }
+    </script>
+</body>
+</html>
