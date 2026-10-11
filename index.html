@@ -9,83 +9,99 @@
 :root{--pink:#ff5eaa;--dark:#74244f;--pale:#fff0f7;--gold:#ffe09a}
 body{margin:0;min-height:100vh;background:linear-gradient(145deg,#ffd1e7,#fff0f7 45%,#f5c7ff);font-family:system-ui,sans-serif;color:#743052;display:flex;align-items:center;justify-content:center;padding:12px;overflow-x:hidden}
 #app{width:min(760px,100%);background:#fff9fc;border:2px solid #ffacd1;border-radius:27px;overflow:hidden;box-shadow:0 18px 65px #bb478c30}
-header{padding:14px;text-align:center;background:linear-gradient(100deg,#ffb8d8,#ffd8eb,#edc8ff);border-bottom:1px solid #ffb3d5}
-header h1{font-size:clamp(20px,5vw,26px);margin:0;color:#a72d6c}
-main{padding:clamp(15px,4vw,25px)}
+header{padding:17px;text-align:center;background:linear-gradient(100deg,#ffb8d8,#ffd8eb,#edc8ff);border-bottom:1px solid #ffb3d5}
+header h1{font-size:clamp(21px,5vw,30px);margin:0;color:#a72d6c}
+header p{margin:5px 0 0;font-size:12px;letter-spacing:2px;color:#9d4775;font-weight:800}
+main{padding:clamp(15px,4vw,28px)}
 .screen{display:none;text-align:center}.screen.active{display:block}
-h2{color:#c6377c;font-size:clamp(24px,5vw,34px);margin:5px 0 12px}
-p{line-height:1.5;margin:8px 0}
-button{font:inherit;font-weight:850;border:0;border-radius:15px;padding:12px 18px;background:linear-gradient(120deg,#ff69ad,#ff91c4);color:white;box-shadow:0 4px 0 #d6478c;cursor:pointer;transition:.15s}
-button:active{transform:translateY(3px);box-shadow:0 1px 0 #d6478c}
-.hero{font-size:64px;filter:drop-shadow(0 6px 6px #ef87b655);animation:float 2s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-6px) rotate(2deg)}}
+h2{color:#c6377c;font-size:clamp(27px,6vw,39px);margin:8px 0}
+p{line-height:1.65}
+button{font:inherit;font-weight:850;border:0;border-radius:15px;padding:13px 19px;background:linear-gradient(120deg,#ff69ad,#ff91c4);color:white;box-shadow:0 5px 0 #d6478c;cursor:pointer;transition:.15s}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 #d6478c}
+button:disabled{opacity:.5}
+.hero{font-size:76px;filter:drop-shadow(0 8px 8px #ef87b655);animation:float 2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotate(3deg)}}
 @keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
-#arena{background:linear-gradient(#ffe3f1,#f8b4d8 65%,#d981b2);border:2px solid #f39bc6;border-radius:20px;overflow:hidden;position:relative;margin-bottom:10px}
+#arena{background:linear-gradient(#ffe3f1,#f8b4d8 65%,#d981b2);border:2px solid #f39bc6;border-radius:20px;overflow:hidden;position:relative}
 canvas{width:100%;height:auto;display:block;touch-action:manipulation}
-.hud{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;text-align:left}
-.label{display:flex;justify-content:space-between;font-size:12px;font-weight:850;gap:5px;margin-bottom:4px}
-.bar{height:12px;border-radius:99px;background:#f4d7e6;border:1px solid #edbad2;overflow:hidden}
+.hud{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;text-align:left}
+.label{display:flex;justify-content:space-between;font-size:12px;font-weight:850;gap:5px;margin-bottom:5px}
+.bar{height:14px;border-radius:99px;background:#f4d7e6;border:1px solid #edbad2;overflow:hidden}
 .fill{height:100%;transition:width .2s}
 #playerBar{background:linear-gradient(90deg,#ff77ae,#ffb2d2)}
 #bossBar{background:linear-gradient(90deg,#f25a7d,#ffb25d)}
-#message{height:24px;font-weight:800;color:#b22f70;font-size:14px;margin-bottom:8px}
-.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.controls button{flex:1;min-width:70px;padding:11px 6px}
-.controls .attack{background:linear-gradient(120deg,#f4a52d,#ffcf76);box-shadow:0 4px 0 #c88b2b;color:#733a30}
-.controls .special{background:linear-gradient(120deg,#bf72f5,#e6a5ff);box-shadow:0 4px 0 #9b58c9}
-.invite{background:linear-gradient(150deg,#fff0f8,#ffe0f0);border:2px dashed #f47bb3;border-radius:20px;padding:18px;margin:15px 0;animation:pop .5s}
-.time{font-size:38px;font-weight:950;color:#bc3479}
+#message{min-height:44px;font-weight:800;color:#b22f70;padding:8px}
+.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:9px}
+.controls button{flex:1;min-width:75px;padding:12px 8px}
+.controls .attack{background:linear-gradient(120deg,#f4a52d,#ffcf76);box-shadow:0 5px 0 #c88b2b;color:#733a30}
+.controls .special{background:linear-gradient(120deg,#bf72f5,#e6a5ff);box-shadow:0 5px 0 #9b58c9}
+.note{font-size:12px;color:#a56887}
+.invite{background:linear-gradient(150deg,#fff0f8,#ffe0f0);border:2px dashed #f47bb3;border-radius:20px;padding:20px;margin:18px 0;animation:pop .5s}
+.time{font-size:42px;font-weight:950;color:#bc3479}
 .secret{font-weight:900;color:#c43e7e}
 .heart{position:fixed;bottom:-35px;pointer-events:none;animation:rise 5s linear forwards;z-index:3}
 @keyframes rise{to{transform:translateY(-110vh) rotate(35deg);opacity:0}}
+@media(max-width:440px){main{padding:13px}.hud{gap:7px}.label{font-size:11px}.controls button{font-size:13px;padding:12px 5px}}
 </style>
 </head>
 <body>
 <div id="app">
 <header>
-<h1>♡ Секрет для Арины ♡</h1>
+<h1>♡ Маленькое приключение ♡</h1>
+<p>СЕКРЕТ ДЛЯ САМОЙ ЛЮБИМОЙ</p>
 </header>
 <main>
 <section id="intro" class="screen active">
 <div class="hero">💌</div>
-<h2>Привет, любимая!</h2>
-<p>Победи трёх боссов, чтобы узнать наш план на годовщину ❤️</p>
-<button onclick="start()">Начать бой ♡</button>
+<h2>Привет, Арина!</h2>
+<p><b>Это твой любимый парень ❤️</b></p>
+<p>Вчера у нас была годовщина, и я приготовил кое-что особенное.</p>
+<p>Но чтобы узнать секрет нашего приключения, тебе предстоит победить тройку забавных боссов: <b>Айро-Гриля, Злого Арбуза и Дениса!</b></p>
+<p>Они охраняют секрет нашего маленького свидания. Готова сразиться?</p>
+<button onclick="start()">Начать приключение ♡</button>
+<p class="note">Подсказка: секрет откроется после победы над всеми противниками.</p>
 </section>
 
 <section id="battle" class="screen">
-<h2 id="bossTitle">Босс</h2>
+<h2 id="bossTitle">Битва</h2>
 <div class="hud">
-<div><div class="label"><span>Арина</span><span id="pt">100</span></div><div class="bar"><div id="playerBar" class="fill" style="width:100%"></div></div></div>
+<div><div class="label"><span>Ты, любовь моя</span><span id="pt">100</span></div><div class="bar"><div id="playerBar" class="fill" style="width:100%"></div></div></div>
 <div><div class="label"><span id="bossNameLabel">Босс</span><span id="bt">100</span></div><div class="bar"><div id="bossBar" class="fill" style="width:100%"></div></div></div>
 </div>
-<div id="arena"><canvas id="cv" width="700" height="320"></canvas></div>
-<div id="message"></div>
+<div id="arena"><canvas id="cv" width="700" height="340"></canvas></div>
+<div id="message">Выбирай тактику и побеждай!</div>
 <div class="controls">
-<button onclick="move(-1)">◀</button>
+<button onclick="move(-1)">◀ Влево</button>
 <button class="attack" onclick="hit()">⚔ Удар</button>
-<button onclick="move(1)">▶</button>
-<button class="special" onclick="special()">💖 (<span id="enCount">0</span>/2)</button>
-<button onclick="dodge()">✨ Уклон</button>
+<button onclick="move(1)">Вправо ▶</button>
+<button class="special" onclick="special()">💖 Суперудар (<span id="enCount">0</span>/2)</button>
+<button onclick="dodge()">✨ Уклониться</button>
 </div>
+<p class="note">Удар наносит отличный урон и совершает рывок! Суперудар заряжается всего за 2 удара. Уклонение спасает от урона.</p>
 </section>
 
 <section id="victory" class="screen">
 <div class="hero">🏆💗</div>
-<h2>Победа!</h2>
+<h2>Ты победила всех боссов!</h2>
+<p>Все преграды позади. Ты заслужила главный секрет нашего вечера!</p>
 <div class="invite">
 <div class="secret">♡ НАШ ПЛАН ♡</div>
 <div class="time">18:00</div>
-<p>📍 <b>м. Лиговский проспект</b><br>🎀 <b>Дресс-код: милый</b></p>
+<p>📍 <b>м. Лиговский проспект</b></p>
+<p>🎀 <b>Дресс-код: милый</b></p>
+<hr style="border:0;border-top:1px solid #f5a8cc">
+<p class="secret">Не пытайся угадать, что это за место заранее ♡</p>
+<p class="note">Это пока примерный ориентир. Подробности будут позже.</p>
 </div>
-<button onclick="hearts()">Обнять 💗</button>
+<p>С годовщиной нас, Арина! ❤️<br>Я приготовил для нас кое-что особенное.</p>
+<button onclick="hearts()">Обнять виртуально 💗</button>
 </section>
 
 <section id="defeat" class="screen">
 <div class="hero">🥺💔</div>
-<h2>Почти получилось!</h2>
-<p>Давай еще раз?</p>
-<button onclick="start()">Реванш 💖</button>
+<h2 id="defeatTitle">Битва проиграна</h2>
+<p>Ничего страшного. Настоящие герои не сдаются с первого раза. Попробуй ещё раз — сюрприз ждёт тебя!</p>
+<button onclick="start()">Реванш! 💖</button>
 </section>
 </main>
 </div>
@@ -93,13 +109,13 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 const $=id=>document.getElementById(id);
 const cv=$('cv'),c=cv.getContext('2d');
 
-let hp,bossMaxHp,boss,x,baseX,energy,guard,locked,shake,particles=[],floatingTexts=[],animTime=0,isAnimating=0;
+let hp,bossMaxHp,boss,x,baseX,energy,guard,turn,locked,shake,particles=[],floatingTexts=[],animTime=0,isAnimating=0;
 let currentBossIndex=0;
 
 const bosses = [
-  { name: 'Айро-Гриль', maxHp: 80 },
-  { name: 'Злой Арбуз', maxHp: 100 },
-  { name: 'Денис', maxHp: 120 }
+  { name: 'Айро-Гриль', maxHp: 80, intro: 'Айро-Гриль: «Никто не пройдёт к секрету!»' },
+  { name: 'Злой Арбуз', maxHp: 100, intro: 'Злой Арбуз: «Хрусть! Попробуй расколоть меня!»' },
+  { name: 'Денис', maxHp: 120, intro: 'Денис: «Я финальный босс! Просто так не сдамся!»' }
 ];
 
 function screen(s){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));$(s).classList.add('active')}
@@ -108,9 +124,9 @@ function start(){
   currentBossIndex = 0;
   hp=100;
   loadBoss();
-  x=150;baseX=150;energy=0;guard=false;locked=false;shake=0;particles=[];floatingTexts=[];
+  x=150;baseX=150;energy=0;guard=false;turn=0;locked=false;shake=0;particles=[];floatingTexts=[];
   screen('battle');
-  say('');
+  say(bosses[currentBossIndex].intro);
   loop();
 }
 
@@ -118,7 +134,7 @@ function loadBoss(){
   let b = bosses[currentBossIndex];
   bossMaxHp = b.maxHp;
   boss = b.maxHp;
-  $('bossTitle').textContent = `Босс ${currentBossIndex + 1}/3: ${b.name}`;
+  $('bossTitle').textContent = `Битва (${currentBossIndex + 1}/3): ${b.name}`;
   $('bossNameLabel').textContent = b.name;
   update();
 }
@@ -134,14 +150,15 @@ function move(d){
   if(locked||isAnimating)return;
   baseX=Math.max(70,Math.min(330,baseX+d*40));
   x=baseX;
+  say(d<0?'Ты отступила назад для манёвра.':'Ты приблизилась к боссу!');
 }
 
-function addParticles(px,py,symbol,n=10){
-  for(let i=0;i<n;i++) particles.push({x:px,y:py,vx:(Math.random()-.5)*6,vy:-Math.random()*5-1,life:40,s:symbol});
+function addParticles(px,py,symbol,n=12){
+  for(let i=0;i<n;i++) particles.push({x:px,y:py,vx:(Math.random()-.5)*7,vy:-Math.random()*6-1,life:45,s:symbol});
 }
 
 function addFloatingText(text,px,py,color='#ff3388'){
-  floatingTexts.push({text,x:px,y:py,life:30,color});
+  floatingTexts.push({text,x:px,y:py,life:35,color});
 }
 
 function animateAttack(targetX, onHit){
@@ -175,26 +192,29 @@ function animateAttack(targetX, onHit){
 
 function hit(){
   if(locked||isAnimating)return;
-  let damage=25+Math.floor(Math.random()*8);
+  let damage=25+Math.floor(Math.random()*10);
   animateAttack(450, ()=>{
     boss=Math.max(0,boss-damage);
     energy=Math.min(2,energy+1);
     shake=5;
-    addParticles(520,150,'💖',14);
-    addFloatingText('-'+damage, 520, 110, '#ff3366');
+    let bName = bosses[currentBossIndex].name;
+    addParticles(520,160, currentBossIndex===1?'🍉':(currentBossIndex===2?'⭐':'💖'),16);
+    addFloatingText('-'+damage, 520, 120, '#ff3366');
+    say(`Отличный удар по боссу ${bName}! -${damage} здоровья.`);
   });
 }
 
 function special(){
   if(locked||isAnimating)return;
-  if(energy<2){say('Копи энергию ударами!');return}
+  if(energy<2){say('Нужно накопить 2 очка энергии обычными ударами!');return}
   let damage=50;
   animateAttack(450, ()=>{
     energy=0;
     boss=Math.max(0,boss-damage);
     shake=12;
-    addParticles(520,150,'✨',24);
-    addFloatingText('СУПЕР! -'+damage, 520, 90, '#bb22ff');
+    addParticles(520,160,'✨',28);
+    addFloatingText('СУПЕРУДАР! -'+damage, 520, 100, '#bb22ff');
+    say('МОЩНЫЙ СУПЕРУДАР ЛЮБВИ! Сокрушительный урон!');
   });
 }
 
@@ -203,8 +223,8 @@ function dodge(){
   guard=true;
   energy=Math.min(2,energy+1);
   shake=2;
-  addParticles(x,180,'🌀',5);
-  say('Уклон!');
+  addParticles(x,195,'🌀',6);
+  say('Ты в стойке уклонения! Следующая атака пролетит мимо.');
   locked=true;
   setTimeout(bossTurn, 500);
 }
@@ -215,14 +235,14 @@ function afterPlayer(){
     currentBossIndex++;
     if(currentBossIndex < bosses.length){
       locked=true;
-      say('Победа! Следующий босс...');
+      say(`🎉 Босс ${bosses[currentBossIndex-1].name} повержен! Впереди следующий противник...`);
       setTimeout(()=>{
         loadBoss();
         hp = Math.min(100, hp + 30);
         update();
-        say('');
+        say(bosses[currentBossIndex].intro);
         locked=false;
-      }, 1200);
+      }, 1500);
       return;
     } else {
       finish(true);
@@ -230,22 +250,23 @@ function afterPlayer(){
     }
   }
   locked=true;
-  setTimeout(bossTurn, 600);
+  setTimeout(bossTurn, 700);
 }
 
 function bossTurn(){
   if(boss<=0)return;
+  let bName = bosses[currentBossIndex].name;
   if(guard){
     guard=false;
-    addFloatingText('ПРОМАХ', 150, 130, '#33aaee');
-    say('Уклонение сработало!');
+    addFloatingText('ПРОМАХ!', 150, 150, '#33aaee');
+    say(`${bName} промахнулся! Отличная реакция.`);
   } else {
     let damage=6+Math.floor(Math.random()*5);
     hp=Math.max(0,hp-damage);
     shake=6;
-    addParticles(x,170,'💥',10);
-    addFloatingText('-'+damage, x, 130, '#ff2222');
-    say('Босс атакует!');
+    addParticles(x,180,'💥',10);
+    addFloatingText('-'+damage, x, 140, '#ff2222');
+    say(`${bName} отвечает на ${damage} урона.`);
   }
   update();
   locked=false;
@@ -255,21 +276,26 @@ function bossTurn(){
 function finish(win){
   locked=true;
   setTimeout(()=>{
-    if(win){ screen('victory'); hearts(); }
-    else { screen('defeat'); }
-  }, 500);
+    if(win){
+      screen('victory');
+      hearts();
+    } else {
+      $('defeatTitle').textContent = `${bosses[currentBossIndex].name} оказался сильнее!`;
+      screen('defeat');
+    }
+  }, 600);
 }
 
 function hearts(){
-  for(let i=0;i<25;i++){
+  for(let i=0;i<30;i++){
     let e=document.createElement('div');
     e.className='heart';
     e.textContent=['💗','💕','♡','✨'][i%4];
     e.style.left=Math.random()*100+'%';
-    e.style.fontSize=(18+Math.random()*22)+'px';
+    e.style.fontSize=(18+Math.random()*24)+'px';
     e.style.animationDuration=(3+Math.random()*3)+'s';
     document.body.appendChild(e);
-    setTimeout(()=>e.remove(),6000);
+    setTimeout(()=>e.remove(),6500);
   }
 }
 
@@ -283,25 +309,41 @@ function text(s,x,y,size,color){
 function drawBoss(bx, by, type){
   if(type === 0){
     c.fillStyle='#59334e';
-    for(let i=0;i<15;i++){ let a=i*Math.PI*2/15; c.beginPath(); c.arc(bx+Math.cos(a)*28,by-45+Math.sin(a)*24,15,0,7); c.fill(); }
-    c.fillStyle='#75435c'; c.beginPath(); c.arc(bx,by-45,30,0,7); c.fill();
-    c.fillStyle='#d99a78'; c.beginPath(); c.ellipse(bx,by-40,21,25,0,0,7); c.fill();
-    c.fillStyle='#ff6d83'; c.beginPath(); c.roundRect(bx-30,by-15,60,55,10); c.fill();
+    for(let i=0;i<15;i++){
+      let a=i*Math.PI*2/15;
+      c.beginPath();c.arc(bx+Math.cos(a)*31,by-50+Math.sin(a)*27,17,0,7);c.fill();
+    }
+    c.fillStyle='#75435c';c.beginPath();c.arc(bx,by-51,34,0,7);c.fill();
+    c.fillStyle='#d99a78';c.beginPath();c.ellipse(bx,by-45,24,29,0,0,7);c.fill();
+    c.fillStyle='#39203b';c.beginPath();c.arc(bx-8,by-50,3,0,7);c.arc(bx+8,by-50,3,0,7);c.fill();
+    c.strokeStyle='#a54264';c.lineWidth=3;c.beginPath();c.arc(bx,by-40,9,.2,Math.PI-.2);c.stroke();
+    c.fillStyle='#ff6d83';c.beginPath();c.roundRect(bx-34,by-16,68,63,12);c.fill();
+    c.strokeStyle='#a83c65';c.lineWidth=3;
+    for(let yy=by-4;yy<by+43;yy+=11){c.beginPath();c.moveTo(bx-27,yy);c.lineTo(bx+27,yy);c.stroke()}
+    c.fillStyle='#52334f';c.fillRect(bx-25,by+46,19,27);c.fillRect(bx+7,by+46,19,27);
   } else if(type === 1){
-    c.fillStyle='#2b9348'; c.beginPath(); c.arc(bx, by-20, 38, 0, Math.PI*2); c.fill();
+    c.fillStyle='#2b9348'; c.beginPath(); c.arc(bx, by-20, 42, 0, Math.PI*2); c.fill();
     c.fillStyle='#132a13';
-    c.beginPath(); c.arc(bx, by-20, 38, 0.2, 1.2); c.lineTo(bx, by-20); c.fill();
-    c.beginPath(); c.arc(bx, by-20, 38, 2.0, 3.0); c.lineTo(bx, by-20); c.fill();
+    c.beginPath(); c.arc(bx, by-20, 42, 0.2, 1.2); c.lineTo(bx, by-20); c.fill();
+    c.beginPath(); c.arc(bx, by-20, 42, 2.0, 3.0); c.lineTo(bx, by-20); c.fill();
+    c.beginPath(); c.arc(bx, by-20, 42, 4.0, 5.0); c.lineTo(bx, by-20); c.fill();
+    c.fillStyle='#000'; c.beginPath(); c.arc(bx-12, by-28, 5, 0, 7); c.arc(bx+12, by-28, 5, 0, 7); c.fill();
+    c.strokeStyle='#000'; c.lineWidth=3; c.beginPath(); c.arc(bx, by-15, 12, 0, Math.PI); c.stroke();
+    c.fillStyle='#2b9348'; c.fillRect(bx-16, by+22, 10, 16); c.fillRect(bx+6, by+22, 10, 16);
   } else {
-    c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx, by-50, 20, 0, 7); c.fill();
-    c.fillStyle='#f1faee'; c.beginPath(); c.ellipse(bx, by-43, 15, 18, 0, 0, 7); c.fill();
-    c.fillStyle='#e63946'; c.beginPath(); c.roundRect(bx-28, by-22, 56, 50, 8); c.fill();
+    c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx, by-55, 22, 0, 7); c.fill();
+    c.fillStyle='#f1faee'; c.beginPath(); c.ellipse(bx, by-48, 17, 20, 0, 0, 7); c.fill();
+    c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx-6, by-52, 3, 0, 7); c.arc(bx+6, by-52, 3, 0, 7); c.fill();
+    c.strokeStyle='#e63946'; c.lineWidth=3; c.beginPath(); c.arc(bx, by-40, 7, 0, Math.PI); c.stroke();
+    c.fillStyle='#e63946'; c.beginPath(); c.roundRect(bx-32, by-26, 64, 55, 10); c.fill();
+    c.fillStyle='#f1faee'; c.beginPath(); c.moveTo(bx, by-24); c.lineTo(bx-5, by-10); c.lineTo(bx, by+10); c.lineTo(bx+5, by-10); c.fill();
+    c.fillStyle='#457b9d'; c.fillRect(bx-24, by+29, 16, 23); c.fillRect(bx+8, by+29, 16, 23);
   }
 }
 
 function draw(){
   animTime+=0.05;
-  c.clearRect(0,0,700,320);
+  c.clearRect(0,0,700,340);
   
   let dx=shake?Math.random()*shake-shake/2:0;
   shake=Math.max(0,shake-1);
@@ -310,36 +352,49 @@ function draw(){
   c.translate(dx,0);
   
   let bgColors = [['#ffe7f4','#e9a1c9'], ['#e2f0d9','#a3e4d7'], ['#d8e2dc','#b5e2fa']];
-  let g=c.createLinearGradient(0,0,0,320);
-  g.addColorStop(0, bgColors[currentBossIndex][0]); g.addColorStop(1, bgColors[currentBossIndex][1]);
-  c.fillStyle=g; c.fillRect(0,0,700,320);
+  let currentBg = bgColors[currentBossIndex];
+  let g=c.createLinearGradient(0,0,0,340);
+  g.addColorStop(0, currentBg[0]); g.addColorStop(1, currentBg[1]);
+  c.fillStyle=g; c.fillRect(0,0,700,340);
   
-  c.fillStyle='#cc7bab'; c.fillRect(0,250,700,70);
-  c.fillStyle='#f4a5cd'; c.fillRect(0,250,700,5);
+  for(let i=0;i<15;i++){
+    c.fillStyle='#ffffff66';
+    c.beginPath();
+    c.arc((i*73+23)%700,(i*41+17)%250,2+i%2,0,7);
+    c.fill();
+  }
   
-  let pY = 180 + Math.sin(animTime)*2;
-  c.fillStyle='#ff5eaa'; c.beginPath(); c.arc(x,pY,24,0,7); c.fill();
-  c.fillStyle='#ffd2b1'; c.beginPath(); c.arc(x,pY-32,16,0,7); c.fill();
-  c.fillStyle='#63324f'; c.beginPath(); c.arc(x,pY-38,17,Math.PI,Math.PI*2); c.fill();
-  text('ТЫ',x,270,13,'#fff');
+  c.fillStyle='#cc7bab';c.fillRect(0,267,700,73);
+  c.fillStyle='#f4a5cd';c.fillRect(0,267,700,6);
+  text('♡ АРЕНА ГОДОВЩИНЫ ♡',350,32,17,'#a42c6a');
   
-  let bx=520, by=170 + Math.cos(animTime)*3;
+  let pY = 195 + Math.sin(animTime)*2;
+  c.fillStyle='#ff5eaa';c.beginPath();c.arc(x,pY,27,0,7);c.fill();
+  c.fillStyle='#ffd2b1';c.beginPath();c.arc(x,pY-37,18,0,7);c.fill();
+  c.fillStyle='#63324f';c.beginPath();c.arc(x,pY-44,19,Math.PI,Math.PI*2);c.fill();
+  c.fillStyle='#fff';c.beginPath();c.arc(x-6,pY-37,3,0,7);c.arc(x+6,pY-37,3,0,7);c.fill();
+  c.fillStyle='#5b2848';c.beginPath();c.arc(x-6,pY-37,1.5,0,7);c.arc(x+6,pY-37,1.5,0,7);c.fill();
+  c.strokeStyle='#ffd2b1';c.lineWidth=8;c.beginPath();c.moveTo(x-17,pY-5);c.lineTo(x-30,pY+16);c.moveTo(x+17,pY-5);c.lineTo(x+29,pY-13);c.stroke();
+  c.fillStyle='#ffadd2';c.fillRect(x-18,pY+23,13,31);c.fillRect(x+5,pY+23,13,31);
+  text('ТЫ',x,289,14,'#fff');
+  
+  let bx=520, by=185 + Math.cos(animTime)*3;
   drawBoss(bx, by, currentBossIndex);
-  text(bosses[currentBossIndex].name.toUpperCase(), bx, 270, 13, '#fff');
+  text(bosses[currentBossIndex].name.toUpperCase(), bx, 289, 14, '#fff');
   
   particles=particles.filter(p=>p.life-->0);
   for(const p of particles){
     p.x+=p.vx; p.y+=p.vy;
-    c.globalAlpha=Math.max(0,p.life/40);
-    text(p.s,p.x,p.y,16,'#fff');
+    c.globalAlpha=Math.max(0,p.life/45);
+    text(p.s,p.x,p.y,18,'#fff');
     c.globalAlpha=1;
   }
 
   floatingTexts=floatingTexts.filter(ft=>ft.life-->0);
   for(const ft of floatingTexts){
-    ft.y-=0.7;
-    c.globalAlpha=Math.max(0,ft.life/30);
-    text(ft.text, ft.x, ft.y, 18, ft.color);
+    ft.y-=0.8;
+    c.globalAlpha=Math.max(0,ft.life/35);
+    text(ft.text, ft.x, ft.y, 20, ft.color);
     c.globalAlpha=1;
   }
   
