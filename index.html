@@ -56,8 +56,8 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <h2>Привет, Арина!</h2>
 <p><b>Это твой любимый парень ❤️</b></p>
 <p>Вчера у нас была годовщина, и я приготовил кое-что особенное.</p>
-<p>Но чтобы узнать секрет нашего приключения, тебе придется победить целых <b>тройку боссов!</b></p>
-<p>Готова пройти этот путь до конца?</p>
+<p>Но чтобы узнать секрет нашего приключения, тебе придется победить трёх забавных боссов: <b>Айро-Гриля, Арбуза и Дениса!</b></p>
+<p>Не переживай, они совсем не страшные. Готова победить?</p>
 <button onclick="start()">Начать приключение ♡</button>
 <p class="note">Подсказка: секрет откроется после победы над всеми врагами.</p>
 </section>
@@ -66,7 +66,7 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <h2 id="bossTitle">Битва</h2>
 <div class="hud">
 <div><div class="label"><span>Ты, любовь моя</span><span id="pt">100</span></div><div class="bar"><div id="playerBar" class="fill" style="width:100%"></div></div></div>
-<div><div class="label"><span id="bossNameLabel">Босс</span><span id="bt">150</span></div><div class="bar"><div id="bossBar" class="fill" style="width:100%"></div></div></div>
+<div><div class="label"><span id="bossNameLabel">Босс</span><span id="bt">100</span></div><div class="bar"><div id="bossBar" class="fill" style="width:100%"></div></div></div>
 </div>
 <div id="arena"><canvas id="cv" width="700" height="340"></canvas></div>
 <div id="message">Выбирай тактику и побеждай!</div>
@@ -74,16 +74,16 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <button onclick="move(-1)">◀ Влево</button>
 <button class="attack" onclick="hit()">⚔ Удар</button>
 <button onclick="move(1)">Вправо ▶</button>
-<button class="special" onclick="special()">💖 Суперудар</button>
+<button class="special" onclick="special()">💖 Суперудар (<span id="enCount">0</span>/2)</button>
 <button onclick="dodge()">✨ Уклониться</button>
 </div>
-<p class="note">Арина делает рывок к боссу при ударе! Уклонение спасает от урона.</p>
+<p class="note">Суперудар заряжается всего за 2 обычных удара! Уклонение полностью защищает от урона.</p>
 </section>
 
 <section id="victory" class="screen">
 <div class="hero">🏆💗</div>
 <h2>Ты победила всех боссов!</h2>
-<p>Все преграды повержены. Ты заслужила главный секрет!</p>
+<p>Все преграды позади. Ты заслужила главный секрет!</p>
 <div class="invite">
 <div class="secret">♡ НАШ ПЛАН ♡</div>
 <div class="time">18:00</div>
@@ -100,7 +100,7 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <section id="defeat" class="screen">
 <div class="hero">🥺💔</div>
 <h2 id="defeatTitle">Битва проиграна</h2>
-<p>Ничего страшного. Настоящие герои не сдаются. Попробуй ещё раз!</p>
+<p>Ничего страшного! Боссы поддавались, давай попробуем ещё раз.</p>
 <button onclick="start()">Реванш! 💖</button>
 </section>
 </main>
@@ -112,10 +112,11 @@ const cv=$('cv'),c=cv.getContext('2d');
 let hp,bossMaxHp,boss,x,baseX,energy,guard,turn,locked,shake,particles=[],floatingTexts=[],animTime=0,isAnimating=0;
 let currentBossIndex=0;
 
+// Сделали боссов гораздо дружелюбнее и проще
 const bosses = [
-  { name: 'Айро-Гриль', maxHp: 150, intro: 'Айро-Гриль: «Никто не пройдёт к секрету!»', color: '#ff6d83' },
-  { name: 'Злой Арбуз', maxHp: 180, intro: 'Злой Арбуз: «Хрусть! Попробуй расколоть меня!»', color: '#38b000' },
-  { name: 'Денис', maxHp: 220, intro: 'Денис: «Я финальный босс! Просто так не сдамся!»', color: '#4361ee' }
+  { name: 'Айро-Гриль', maxHp: 80, intro: 'Айро-Гриль: «Я просто погреться пришёл... но попробуй пройди!»' },
+  { name: 'Злой Арбуз', maxHp: 100, intro: 'Злой Арбуз: «Хрусть! Я сладкий, но грозный!»' },
+  { name: 'Денис', maxHp: 120, intro: 'Денис: «Финальный босс приветствует тебя!»' }
 ];
 
 function screen(s){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));$(s).classList.add('active')}
@@ -142,7 +143,7 @@ function loadBoss(){
 function say(s){$('message').textContent=s}
 function update(){
   $('pt').textContent=hp;
-  $('bt').textContent=Math.max(0,boss);
+  $('bt').textContent=Math.max(0,boss);$('enCount').textContent=energy;
   $('playerBar').style.width=Math.max(0,hp)+'\%';$('bossBar').style.width=Math.max(0,boss/bossMaxHp*100)+'%';
 }
 
@@ -150,7 +151,7 @@ function move(d){
   if(locked||isAnimating)return;
   baseX=Math.max(70,Math.min(330,baseX+d*40));
   x=baseX;
-  say(d<0?'Ты отступила назад.':'Ты приблизилась к боссу!');
+  say(d<0?'Ты отступила назад для манёвра.':'Ты приблизилась к боссу!');
 }
 
 function addParticles(px,py,symbol,n=12){
@@ -194,43 +195,43 @@ function animateAttack(targetX, onHit){
 
 function hit(){
   if(locked||isAnimating)return;
-  let damage=20+Math.floor(Math.random()*8);
+  let damage=25+Math.floor(Math.random()*10); // Увеличили урон игрока
   
   animateAttack(450, ()=>{
     boss=Math.max(0,boss-damage);
-    energy=Math.min(3,energy+1);
-    shake=6;
+    energy=Math.min(2,energy+1); // Суперудар заряжается за 2 удара
+    shake=5;
     let bName = bosses[currentBossIndex].name;
     addParticles(520,160, currentBossIndex===1?'🍉':(currentBossIndex===2?'⭐':'💖'),16);
     addFloatingText('-'+damage, 520, 120, '#ff3366');
-    say(`Точный удар по боссу ${bName}! -${damage} здоровья.`);
+    say(`Отличный удар по ${bName}! -${damage} здоровья.`);
   });
 }
 
 function special(){
   if(locked||isAnimating)return;
-  if(energy<3){say('Нужно накопить 3 очка энергии (используй обычные удары)!');return}
-  let damage=45;
+  if(energy<2){say('Нужно накопить 2 очка энергии (используй обычные удары)!');return}
+  let damage=50; // Мощный суперудар
   
   animateAttack(450, ()=>{
     energy=0;
     boss=Math.max(0,boss-damage);
-    shake=14;
+    shake=12;
     addParticles(520,160,'✨',28);
     addFloatingText('СУПЕРУДАР! -'+damage, 520, 100, '#bb22ff');
-    say('МОЩНЫЙ СУПЕРУДАР ЛЮБВИ! Сокрушительный урон!');
+    say('МОЩНЫЙ СУПЕРУДАР ЛЮБВИ! Огромный урон боссу!');
   });
 }
 
 function dodge(){
   if(locked||isAnimating)return;
   guard=true;
-  energy=Math.min(3,energy+1);
+  energy=Math.min(2,energy+1);
   shake=2;
   addParticles(x,195,'🌀',6);
   say('Ты в стойке уклонения! Следующая атака пролетит мимо.');
   locked=true;
-  setTimeout(bossTurn, 600);
+  setTimeout(bossTurn, 500);
 }
 
 function afterPlayer(){
@@ -242,6 +243,8 @@ function afterPlayer(){
       say(`🎉 Босс ${bosses[currentBossIndex-1].name} повержен! Впереди следующий противник...`);
       setTimeout(()=>{
         loadBoss();
+        hp = Math.min(100, hp + 30); // Немного лечим игрока между боссами
+        update();
         say(bosses[currentBossIndex].intro);
         locked=false;
       }, 1500);
@@ -252,7 +255,7 @@ function afterPlayer(){
     }
   }
   locked=true;
-  setTimeout(bossTurn, 800);
+  setTimeout(bossTurn, 700);
 }
 
 function bossTurn(){
@@ -263,12 +266,12 @@ function bossTurn(){
     addFloatingText('ПРОМАХ!', 150, 150, '#33aaee');
     say(`${bName} промахнулся! Отличная реакция.`);
   } else {
-    let damage=12+Math.floor(Math.random()*8) + currentBossIndex*3; // Денис бьёт сильнее
+    let damage=6+Math.floor(Math.random()*5); // Очень мягкий урон от боссов
     hp=Math.max(0,hp-damage);
-    shake=8;
-    addParticles(x,180,'💥',12);
+    shake=6;
+    addParticles(x,180,'💥',10);
     addFloatingText('-'+damage, x, 140, '#ff2222');
-    say(`${bName} отвечает мощным ударом на ${damage} урона!`);
+    say(`${bName} слабо отвечает на ${damage} урона.`);
   }
   update();
   locked=false;
@@ -282,7 +285,7 @@ function finish(win){
       screen('victory');
       hearts();
     } else {
-      $('defeatTitle').textContent = `${bosses[currentBossIndex].name} оказался сильнее!`;
+      $('defeatTitle').textContent = `${bosses[currentBossIndex].name} чудом устоял!`;
       screen('defeat');
     }
   }, 600);
@@ -327,24 +330,20 @@ function drawBoss(bx, by, type){
   } else if(type === 1){
     // Арбуз
     c.fillStyle='#2b9348'; c.beginPath(); c.arc(bx, by-20, 42, 0, Math.PI*2); c.fill();
-    // полоски арбуза
     c.fillStyle='#132a13';
     c.beginPath(); c.arc(bx, by-20, 42, 0.2, 1.2); c.lineTo(bx, by-20); c.fill();
     c.beginPath(); c.arc(bx, by-20, 42, 2.0, 3.0); c.lineTo(bx, by-20); c.fill();
     c.beginPath(); c.arc(bx, by-20, 42, 4.0, 5.0); c.lineTo(bx, by-20); c.fill();
-    // лицо арбуза
     c.fillStyle='#000'; c.beginPath(); c.arc(bx-12, by-28, 5, 0, 7); c.arc(bx+12, by-28, 5, 0, 7); c.fill();
     c.strokeStyle='#000'; c.lineWidth=3; c.beginPath(); c.arc(bx, by-15, 12, 0, Math.PI); c.stroke();
-    // ноги арбуза
     c.fillStyle='#2b9348'; c.fillRect(bx-16, by+22, 10, 16); c.fillRect(bx+6, by+22, 10, 16);
   } else {
     // Денис
-    c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx, by-55, 22, 0, 7); c.fill(); // волосы
-    c.fillStyle='#f1faee'; c.beginPath(); c.ellipse(bx, by-48, 17, 20, 0, 0, 7); c.fill(); // лицо
+    c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx, by-55, 22, 0, 7); c.fill();
+    c.fillStyle='#f1faee'; c.beginPath(); c.ellipse(bx, by-48, 17, 20, 0, 0, 7); c.fill();
     c.fillStyle='#1d3557'; c.beginPath(); c.arc(bx-6, by-52, 3, 0, 7); c.arc(bx+6, by-52, 3, 0, 7); c.fill();
-    c.strokeStyle='#e63946'; c.lineWidth=3; c.beginPath(); c.arc(bx, by-40, 7, 0, Math.PI); c.stroke(); // злая улыбка
-    c.fillStyle='#e63946'; c.beginPath(); c.roundRect(bx-32, by-26, 64, 55, 10); c.fill(); // костюм
-    // галстук
+    c.strokeStyle='#e63946'; c.lineWidth=3; c.beginPath(); c.arc(bx, by-40, 7, 0, Math.PI); c.stroke();
+    c.fillStyle='#e63946'; c.beginPath(); c.roundRect(bx-32, by-26, 64, 55, 10); c.fill();
     c.fillStyle='#f1faee'; c.beginPath(); c.moveTo(bx, by-24); c.lineTo(bx-5, by-10); c.lineTo(bx, by+10); c.lineTo(bx+5, by-10); c.fill();
     c.fillStyle='#457b9d'; c.fillRect(bx-24, by+29, 16, 23); c.fillRect(bx+8, by+29, 16, 23);
   }
@@ -360,14 +359,12 @@ function draw(){
   c.save();
   c.translate(dx,0);
   
-  // Фон арены меняется в зависимости от босса
   let bgColors = [['#ffe7f4','#e9a1c9'], ['#e2f0d9','#a3e4d7'], ['#d8e2dc','#b5e2fa']];
   let currentBg = bgColors[currentBossIndex];
   let g=c.createLinearGradient(0,0,0,340);
   g.addColorStop(0, currentBg[0]); g.addColorStop(1, currentBg[1]);
   c.fillStyle=g; c.fillRect(0,0,700,340);
   
-  // Звёздочки на фоне
   for(let i=0;i<15;i++){
     c.fillStyle='#ffffff66';
     c.beginPath();
@@ -375,12 +372,10 @@ function draw(){
     c.fill();
   }
   
-  // Земля
   c.fillStyle='#cc7bab';c.fillRect(0,267,700,73);
   c.fillStyle='#f4a5cd';c.fillRect(0,267,700,6);
   text('♡ АРЕНА ГОДОВЩИНЫ ♡',350,32,17,'#a42c6a');
   
-  // Игрок (Арина)
   let pY = 195 + Math.sin(animTime)*2;
   c.fillStyle='#ff5eaa';c.beginPath();c.arc(x,pY,27,0,7);c.fill();
   c.fillStyle='#ffd2b1';c.beginPath();c.arc(x,pY-37,18,0,7);c.fill();
@@ -391,12 +386,10 @@ function draw(){
   c.fillStyle='#ffadd2';c.fillRect(x-18,pY+23,13,31);c.fillRect(x+5,pY+23,13,31);
   text('ТЫ',x,289,14,'#fff');
   
-  // Рисуем активного босса
   let bx=520, by=185 + Math.cos(animTime)*3;
   drawBoss(bx, by, currentBossIndex);
   text(bosses[currentBossIndex].name.toUpperCase(), bx, 289, 14, '#fff');
   
-  // Частицы
   particles=particles.filter(p=>p.life-->0);
   for(const p of particles){
     p.x+=p.vx; p.y+=p.vy;
@@ -405,7 +398,6 @@ function draw(){
     c.globalAlpha=1;
   }
 
-  // Всплывающие цифры урона
   floatingTexts=floatingTexts.filter(ft=>ft.life-->0);
   for(const ft of floatingTexts){
     ft.y-=0.8;
