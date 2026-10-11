@@ -77,7 +77,7 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <button class="special" onclick="special()">💖 Суперудар</button>
 <button onclick="dodge()">✨ Уклониться</button>
 </div>
-<p class="note">Удар наносит 20-27 урона. Суперудар — 45 (нужно 3 энергии). Уклонение полностью защищает от атаки!</p>
+<p class="note">Используй удар или суперудар — Арина сама сделает рывок к боссу! Уклонение спасает от урона.</p>
 </section>
 
 <section id="victory" class="screen">
@@ -108,70 +108,122 @@ canvas{width:100%;height:auto;display:block;touch-action:manipulation}
 <script>
 const $=id=>document.getElementById(id);
 const cv=$('cv'),c=cv.getContext('2d');
-let hp,boss,x,energy,guard,turn,locked,shake,particles=[],animTime=0;
+let hp,boss,x,baseX,energy,guard,turn,locked,shake,particles=[],floatingTexts=[],animTime=0,isAnimating=0;
 
 function screen(s){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));$(s).classList.add('active')}
-function start(){hp=100;boss=150;x=150;energy=0;guard=false;turn=0;locked=false;shake=0;particles=[];update();screen('battle');say('Айро-Гриль: «Никто не пройдёт к секрету!»');loop()}
+function start(){hp=100;boss=150;x=150;baseX=150;energy=0;guard=false;turn=0;locked=false;shake=0;particles=[];floatingTexts=[];update();screen('battle');say('Айро-Гриль: «Никто не пройдёт к секрету!»');loop()}
 function say(s){$('message').textContent=s}
 function update(){$('pt').textContent=hp;$('bt').textContent=Math.max(0,boss);$('playerBar').style.width=Math.max(0,hp)+'%';$('bossBar').style.width=Math.max(0,boss/150*100)+'%'}
 
 function move(d){
-  if(locked)return;
-  x=Math.max(70,Math.min(330,x+d*40));
-  say(d<0?'Ты сделала шаг назад для манёвра.':'Ты сократила дистанцию с боссом!');
+  if(locked||isAnimating)return;
+  baseX=Math.max(70,Math.min(330,baseX+d*40));
+  x=baseX;
+  say(d<0?'Ты отступила назад.':'Ты приблизилась к боссу!');
 }
 
-function particlesAt(px,py,symbol,n=10){
-  for(let i=0;i<n;i++) particles.push({x:px,y:py,vx:(Math.random()-.5)*6,vy:-Math.random()*5-1,life:40,s:symbol});
+function addParticles(px,py,symbol,n=12){
+  for(let i=0;i<n;i++) particles.push({x:px,y:py,vx:(Math.random()-.5)*7,vy:-Math.random()*6-1,life:45,s:symbol});
+}
+
+function addFloatingText(text,px,py,color='#ff3388'){
+  floatingTexts.push({text,x:px,y:py,life:35,color});
+}
+
+// Плавная анимация рывка к боссу и обратно
+function animateAttack(targetX, onHit){
+  isAnimating=true;
+  let startX=x;
+  let progress=0;
+  
+  function step(){
+    progress+=0.15;
+    if(progress<1){
+      // Рывок вперёд
+      x=startX+(targetX-startX)*Math.sin(progress*Math.PI/2);
+      requestAnimationFrame(step);
+    } else {
+      // Момент удара
+      x=targetX;
+      onHit();
+      // Возврат назад
+      let backProgress=0;
+      function backStep(){
+        backProgress+=0.12;
+        if(backProgress<1){
+          x=targetX+(baseX-targetX)*Math.sin(backProgress*Math.PI/2);
+          requestAnimationFrame(backStep);
+        } else {
+          x=baseX;
+          isAnimating=false;
+          afterPlayer();
+        }
+      }
+      requestAnimationFrame(backStep);
+    }
+  }
+  requestAnimationFrame(step);
 }
 
 function hit(){
-  if(locked)return;
+  if(locked||isAnimating)return;
   let damage=20+Math.floor(Math.random()*8);
-  boss=Math.max(0,boss-damage);
-  energy=Math.min(3,energy+1);
-  shake=4;
-  particlesAt(520,160,'💖',12);
-  say('Точный удар! Босс потерял '+damage+' здоровья. Энергия: '+energy+'/3.');
-  afterPlayer();
+  
+  animateAttack(450, ()=>{
+    boss=Math.max(0,boss-damage);
+    energy=Math.min(3,energy+1);
+    shake=6;
+    addParticles(520,160,'💖',16);
+    addFloatingText('-'+damage, 520, 120, '#ff3366');
+    say('Точный удар! Босс потерял '+damage+' здоровья.');
+  });
 }
 
 function special(){
-  if(locked)return;
+  if(locked||isAnimating)return;
   if(energy<3){say('Нужно накопить 3 очка энергии (используй обычные удары)!');return}
-  energy=0;
-  boss=Math.max(0,boss-45);
-  shake=10;
-  particlesAt(520,160,'✨',22);
-  say('СУПЕРУДАР ЛЮБВИ! Огромный урон по боссу!');
-  afterPlayer();
+  let damage=45;
+  
+  animateAttack(450, ()=>{
+    energy=0;
+    boss=Math.max(0,boss-damage);
+    shake=14;
+    addParticles(520,160,'✨',28);
+    addFloatingText('СУПЕРУДАР! -'+damage, 520, 100, '#bb22ff');
+    say('МОЩНЫЙ СУПЕРУДАР ЛЮБВИ! Огромный урон!');
+  });
 }
 
 function dodge(){
-  if(locked)return;
+  if(locked||isAnimating)return;
   guard=true;
   energy=Math.min(3,energy+1);
+  shake=2;
+  addParticles(x,195,'🌀',6);
   say('Ты в стойке уклонения! Следующая атака босса пролетит мимо.');
-  setTimeout(bossTurn, 500);
+  locked=true;
+  setTimeout(bossTurn, 600);
 }
 
 function afterPlayer(){
   update();
   if(boss<=0){finish(true);return}
   locked=true;
-  setTimeout(bossTurn, 700);
+  setTimeout(bossTurn, 800);
 }
 
 function bossTurn(){
   if(boss<=0)return;
   if(guard){
     guard=false;
+    addFloatingText('ПРОМАХ!', 150, 150, '#33aaee');
     say('Айро-Гриль промахнулся! Отличная реакция.');
   } else {
     let damage=12+Math.floor(Math.random()*7);
     hp=Math.max(0,hp-damage);
-    shake=6;
-    particlesAt(x,180,'💥',10);
+    shake=8;
+    addParticles(x,180,'💥',12);
+    addFloatingText('-'+damage, x, 140, '#ff2222');
     say('Айро-Гриль отвечает мощным ударом на '+damage+' урона!');
   }
   update();
@@ -264,8 +316,17 @@ function draw(){
   particles=particles.filter(p=>p.life-->0);
   for(const p of particles){
     p.x+=p.vx; p.y+=p.vy;
-    c.globalAlpha=Math.max(0,p.life/40);
+    c.globalAlpha=Math.max(0,p.life/45);
     text(p.s,p.x,p.y,18,'#fff');
+    c.globalAlpha=1;
+  }
+
+  // Всплывающие цифры урона
+  floatingTexts=floatingTexts.filter(ft=>ft.life-->0);
+  for(const ft of floatingTexts){
+    ft.y-=0.8;
+    c.globalAlpha=Math.max(0,ft.life/35);
+    text(ft.text, ft.x, ft.y, 20, ft.color);
     c.globalAlpha=1;
   }
   
